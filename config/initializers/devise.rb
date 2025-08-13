@@ -326,20 +326,34 @@ end
 # When set to false, does not sign a user in automatically after their password is
 # changed. Defaults to true, so a user is signed in automatically after changing a password.
 # config.sign_in_after_change_password = true
-config.jwt do |jwt|
-  jwt.secret = Rails.application.credentials.devise[:jwt_secret_key]
-  jwt.dispatch_requests = [
-    [ "POST", %r{^/users/sign_in$} ],
-    [ "POST", %r{^/users$} ]
-  ]
-  jwt.revocation_requests = [
-    [ "DELETE", %r{^/users/sign_out$} ]
-  ]
-  jwt.expiration_time = 1.day.to_i
+# config/initializers/devise.rb
+
+Devise.setup do |config|
+  # Use environment variable first, fallback to credentials if present
+  jwt_secret = ENV["DEVISE_JWT_SECRET_KEY"] || Rails.application.credentials.dig(:devise, :jwt_secret_key)
+
+  config.jwt do |jwt|
+    jwt.secret = jwt_secret
+    jwt.dispatch_requests = [
+      [ "POST", %r{^/users/sign_in$} ],
+      [ "POST", %r{^/users$} ]
+    ]
+    jwt.revocation_requests = [
+      [ "DELETE", %r{^/users/sign_out$} ]
+    ]
+    jwt.expiration_time = 1.day.to_i
+  end
+
+  # Omniauth Google
+  google_client_id     = ENV["GOOGLE_CLIENT_ID"]     || Rails.application.credentials.dig(:google, :client_id)
+  google_client_secret = ENV["GOOGLE_CLIENT_SECRET"] || Rails.application.credentials.dig(:google, :client_secret)
+
+  if google_client_id.present? && google_client_secret.present?
+    config.omniauth :google_oauth2,
+                    google_client_id,
+                    google_client_secret,
+                    scope: "userinfo.email,userinfo.profile",
+                    access_type: "offline"
+  end
 end
-config.omniauth :google_oauth2,
-  Rails.application.credentials.dig(:google, :client_id),
-  Rails.application.credentials.dig(:google, :client_secret),
-  scope: "userinfo.email,userinfo.profile",
-  access_type: "offline"
 end
