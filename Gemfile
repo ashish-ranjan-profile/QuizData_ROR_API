@@ -54,3 +54,5 @@ gem "omniauth-google-oauth2"
 gem "google-id-token"
 gem "dotenv-rails", groups: [ :development, :test ]
 gem "pg", "~> 1.5"
+# gem "sprockets-rails"
+# gem "pg" # PostgreSQL for Render
