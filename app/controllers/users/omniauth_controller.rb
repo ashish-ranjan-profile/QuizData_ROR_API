@@ -1,7 +1,7 @@
 require "google-id-token"
 
 class Users::OmniauthController < ApplicationController
-skip_before_action :verify_authenticity_token, raise: false
+  skip_before_action :verify_authenticity_token
 
   def google_token
     token = params[:credential]
