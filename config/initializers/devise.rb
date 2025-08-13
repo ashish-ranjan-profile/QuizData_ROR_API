@@ -327,11 +327,9 @@ end
 # changed. Defaults to true, so a user is signed in automatically after changing a password.
 # config.sign_in_after_change_password = true
 # config/initializers/devise.rb
-
+# config/initializers/devise.rb
 Devise.setup do |config|
-  # Use environment variable first, fallback to credentials if present
-  jwt_secret = ENV["DEVISE_JWT_SECRET_KEY"] || Rails.application.credentials.dig(:devise, :jwt_secret_key)
-
+  jwt_secret = ENV["DEVISE_JWT_SECRET_KEY"]
   config.jwt do |jwt|
     jwt.secret = jwt_secret
     jwt.dispatch_requests = [
@@ -344,9 +342,8 @@ Devise.setup do |config|
     jwt.expiration_time = 1.day.to_i
   end
 
-  # Omniauth Google
-  google_client_id     = ENV["GOOGLE_CLIENT_ID"]     || Rails.application.credentials.dig(:google, :client_id)
-  google_client_secret = ENV["GOOGLE_CLIENT_SECRET"] || Rails.application.credentials.dig(:google, :client_secret)
+  google_client_id     = ENV["GOOGLE_CLIENT_ID"]
+  google_client_secret = ENV["GOOGLE_CLIENT_SECRET"]
 
   if google_client_id.present? && google_client_secret.present?
     config.omniauth :google_oauth2,
