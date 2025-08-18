@@ -1,21 +1,23 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-  # Code eager load
+  # Eager load code on boot
   config.eager_load = true
+
+  # Show user-friendly errors (not full stacktrace in prod)
   config.consider_all_requests_local = false
 
-  # Cache
+  # Caching
   config.action_controller.perform_caching = true
   config.cache_store = :memory_store
 
-  # File storage (change if using S3 or cloud)
+  # Active Storage (local, change if using S3 or Cloudinary)
   config.active_storage.service = :local
 
-  # Mailer settings
+  # Mailer
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = { host: "yourdomain.com", protocol: "https" }
+  config.action_mailer.default_url_options = { host: ENV["APP_HOST"] || "yourdomain.com", protocol: "https" }
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
@@ -32,22 +34,19 @@ Rails.application.configure do
   config.log_level = :info
   config.log_tags  = [ :request_id ]
 
-  # Asset management
-  config.assets.compile = false
-
   # I18n fallback
   config.i18n.fallbacks = true
 
   # Logging formatter
   config.log_formatter = ::Logger::Formatter.new
 
-  # STDOUT logger for servers
+  # STDOUT logger for deployment (Render, Railway, Heroku, etc.)
   if ENV["RAILS_LOG_TO_STDOUT"].present?
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
-  # Database migrations error
+  # Do not dump schema after migration
   config.active_record.dump_schema_after_migration = false
 end
